@@ -33,17 +33,18 @@ export const App = () => {
         try {
           setIsLoading(true);
           const response = await fetchImages(searchQuery, page, perPage);
-          setImages(response.data.hits);
+          setImages(prevImages => {
+            console.log(prevImages);
+            return [...prevImages, ...response.data.hits];
+          });
+          // setImages(response.data.hits);
+          console.log(response.data.hits);
 
           // Перевірка на наявність кнопки LoadMore
           if (response.data.hits.length === perPage) {
             setShowLoadMoreBtne(true);
-          } else setShowLoadMoreBtne(false);
-
-          // Пагінація нанатисканні кнопки LoadMore
-          if (page > 1) {
-            setImages([...images, ...response.data.hits]);
-            return;
+          } else if (response.data.hits.length !== perPage) {
+            setShowLoadMoreBtne(false);
           }
         } catch (error) {
         } finally {
@@ -58,12 +59,12 @@ export const App = () => {
   }, [searchQuery, page]);
 
   const onSubmit = search => {
-    setSearchQuery(search);
-
+    setSearchQuery(search, page);
+    setImages([]);
     setPage(1);
   };
 
-  const onLoadMoreClick = async search => {
+  const onLoadMoreClick = search => {
     setPage(prevPage => prevPage + 1);
   };
 
