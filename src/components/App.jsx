@@ -22,29 +22,24 @@ export const App = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    console.log('Did Mount');
-  }, []);
-
-  useEffect(() => {
-    console.log('Did Update');
-
     if (searchQuery) {
       const fetchData = async () => {
         try {
           setIsLoading(true);
           const response = await fetchImages(searchQuery, page, perPage);
           setImages(prevImages => {
-            console.log(prevImages);
             return [...prevImages, ...response.data.hits];
           });
-          // setImages(response.data.hits);
-          console.log(response.data.hits);
 
           // Перевірка на наявність кнопки LoadMore
           if (response.data.hits.length === perPage) {
             setShowLoadMoreBtne(true);
           } else if (response.data.hits.length !== perPage) {
             setShowLoadMoreBtne(false);
+          }
+
+          if (page === 1) {
+            setImages(response.data.hits);
           }
         } catch (error) {
         } finally {
@@ -59,8 +54,8 @@ export const App = () => {
   }, [searchQuery, page]);
 
   const onSubmit = search => {
-    setSearchQuery(search, page);
-    setImages([]);
+    setSearchQuery(search);
+    // setImages([]);
     setPage(1);
   };
 
